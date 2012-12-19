@@ -18,6 +18,12 @@ contains
         call tracebackqq()
         error stop
     end subroutine
+    subroutine info(message)
+        character(*) :: message
+
+        call logmessage('INFO',message)
+    end subroutine
+    
 
     subroutine logmessage(level,message)
         use, intrinsic :: iso_fortran_env
