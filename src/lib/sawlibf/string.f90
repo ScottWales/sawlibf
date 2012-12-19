@@ -1,9 +1,8 @@
 module sawlibf_string
 implicit none
     type string
-        character,dimension(:),allocatable :: value
+        character(len=:),allocatable :: value
         integer :: length
-        integer :: availableSize
     contains
         final :: delete_string 
     end type
@@ -17,10 +16,9 @@ contains
         integer,intent(in) :: value
         type(string) self
 
-        self%length = 0
-        self%availableSize = value
-        allocate(self%value(self%availableSize))
-        self%value = '\0'
+        self%length = value
+        allocate(character(self%length)::self%value)
+        self%value = char(0)
     end function
 
     function constructFromString(value) result(self)
@@ -28,7 +26,6 @@ contains
         type(string) self
 
         self = constructFromSize(value%length)
-        self%length = value%length
         self%value = value%value
     end function
 
@@ -44,7 +41,6 @@ contains
         implicit none
         type(string),intent(inout) :: self
 
-        self%availableSize = 0
         self%length = 0
 
         if (allocated(self%value)) then 
