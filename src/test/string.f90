@@ -58,7 +58,7 @@ program test
     call initChar()
     call initString()
     call copy()
-!    call append()
-!    call equal()
+    call append()
+    call equal()
 
 end program
