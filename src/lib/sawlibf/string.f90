@@ -1,5 +1,16 @@
 ! A simple string type
 ! Provides basic operations for dynamic strings
+!
+! Interface:
+! ----------
+! string(integer n) -> string
+!   Create a string with space to hold n characters
+! string(character(len=*) c) -> string
+!   Create a new string and initialise with value of c
+! string(string s) -> string
+!   Copy constructor
+! string%append(string s) -> string
+!   Append s to the end of this
 
 module sawlibf_string
 implicit none
