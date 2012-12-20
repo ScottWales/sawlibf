@@ -29,38 +29,42 @@ implicit none
     end interface
 contains
     ! Construct a string given an initial size
-    function constructFromSize(value) result(self)
+    function constructFromSize(value) result(this)
         integer,intent(in) :: value
-        type(string) self
+        type(string) this
 
-        self%length = value
-        allocate(character(self%length)::self%value)
-        self%value = char(0)
+        this%length = value
+        allocate(character(this%length)::this%value)
+        this%value = char(0)
     end function
 
     ! Copy constructor
-    function constructFromString(value) result(self)
+    function constructFromString(value) result(this)
         type(string),intent(in) :: value
-        type(string) self
+        type(string) this
 
-        self = constructFromSize(value%length)
-        self%value = value%value
+        this = constructFromSize(value%length)
+        this%value = value%value
     end function
 
     ! Construct from a character(len=*) 
-    function constructFromCharacterString(value) result(self)
+    function constructFromCharacterString(value) result(this)
         character(len=*),intent(in) :: value
-        type(string) self
+        type(string) this
 
-        self = constructFromSize(len(value))
-        self%value = value
+        this = constructFromSize(len(value))
+        this%value = value
     end function
 
-    subroutine delete_string(self)
+    subroutine delete_string(this)
         implicit none
-        type(string),intent(inout) :: self
+        type(string),intent(inout) :: this
 
-        self%length = 0
+        this%length = 0
+        if (allocated(this%value)) then 
+            deallocate(this%value)
+        end if
+    end subroutine
 
         if (allocated(self%value)) then 
             deallocate(self%value)
