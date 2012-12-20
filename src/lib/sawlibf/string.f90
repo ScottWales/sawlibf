@@ -9,18 +9,20 @@
 !   Create a new string and initialise with value of c
 ! string(string s) -> string
 !   Copy constructor
-! string%append(string s) -> string
-!   Append s to the end of this
+!
 ! a = b
 !   Sets the string a equal to string b
 ! a .eq. b
 !   Returns true if string a is equal to string b
+!
+! call string%append(string s)
+!   Append s to the end of this
 
 module sawlibf_string
 implicit none
     type string
-        character(len=:),allocatable :: value !< Character data
-        integer :: length !< The allocated length
+        character(len=:),allocatable,private :: value
+        integer,private :: length
     contains
         procedure :: appendString
         procedure :: appendCharacterString
@@ -40,7 +42,8 @@ implicit none
         procedure :: constructFromCharacterString
     end interface
     interface assignment(=)
-        procedure :: copy
+        procedure :: copyString
+        procedure :: copyCharacterString
     end interface
 contains
     ! Construct a string given an initial size
@@ -106,7 +109,7 @@ contains
         call this%appendString(string(other))
     end subroutine
 
-    subroutine copy(this,other)
+    subroutine copyString(this,other)
         implicit none
         class(string),intent(inout) :: this
         class(string),intent(in) :: other
@@ -117,6 +120,13 @@ contains
         this%length=other%length
         allocate(character(this%length)::this%value)
         this%value = other%value
+    end subroutine
+    subroutine copyCharacterString(this,other)
+        implicit none
+        type(string),intent(inout) :: this
+        character(*),intent(in) :: other
+
+        call copyString(this,string(other))
     end subroutine
 
     function equalString(this,other) result(equal)
