@@ -72,7 +72,6 @@ implicit none
     public :: assignment(=)
     public :: operator(.eq.)
     public :: operator(.append.)
-    public :: appendCharacterString
 contains
     ! Construct a string given an initial size
     function constructFromSize(value) result(this)
