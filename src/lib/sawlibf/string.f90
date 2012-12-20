@@ -86,6 +86,8 @@ contains
             deallocate(this%value)
         end if
         allocate(character(this%length)::this%value)
+        this%value(1:len(tmp)) = tmp
+        this%value(len(tmp)+1:this%length) = other%value
     end subroutine
     subroutine appendCharacterString(this,other)
         implicit none
