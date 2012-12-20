@@ -25,6 +25,7 @@
 !     type(string) :: foo
 !     character(len=:),allocatable ::bar
 !     integer :: length
+!     foo = "abc"
 !     length = foo%length
 !     allocate(character(length)::bar)
 !     bar = foo
@@ -64,9 +65,13 @@ implicit none
         procedure :: copyCharacterString
         procedure :: toCharacterString
     end interface
+    interface operator(.eq.)
+        procedure :: characterStringEqual
+    end interface
 
     public :: string
     public :: assignment(=)
+    public :: operator(.eq.)
 contains
     ! Construct a string given an initial size
     function constructFromSize(value) result(this)
@@ -158,21 +163,29 @@ contains
         this = other%value
     end subroutine
 
-    elemental function equalString(this,other) result(equal)
+    elemental function equalString(lhs,rhs) result(equal)
         implicit none
-        class(string),intent(in) :: this
-        class(string),intent(in) :: other
+        class(string),intent(in) :: lhs
+        class(string),intent(in) :: rhs
         logical :: equal
 
-        equal = this%value .eq. other%value
+        equal = lhs%value .eq. rhs%value
     end function
-    elemental function equalCharacterString(this,other) result(equal)
+    elemental function equalCharacterString(lhs,rhs) result(equal)
         implicit none
-        class(string),intent(in) :: this
-        character(len=*),intent(in) :: other
+        class(string),intent(in) :: lhs
+        character(len=*),intent(in) :: rhs
         logical :: equal
 
-        equal = this%value .eq. other
+        equal = lhs%value .eq. rhs
+    end function
+    elemental function characterStringEqual(lhs,rhs) result(equal)
+        implicit none
+        character(len=*),intent(in) :: lhs
+        class(string),intent(in) :: rhs
+        logical :: equal
+
+        equal = lhs .eq. rhs%value
     end function
 
     elemental function length(this) 

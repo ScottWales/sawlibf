@@ -46,6 +46,7 @@ contains
 
         call assert(.not. (foo .eq. bar))
         call assert(foo .eq. "abc")
+        call assert("abc" .eq. foo)
         foo = bar
         call assert(foo .eq. bar)
     end subroutine
