@@ -19,7 +19,7 @@ all:
 LD=$(FC)
 MKDIR=mkdir -p
 
-FFLAGS+=-warn all -warn errors
+FFLAGS+=-warn all -warn errors -check all
 FFLAGS+=-module include
 FFLAGS+=-g -traceback
 

@@ -18,6 +18,10 @@ implicit none
         character(len=:),allocatable :: value !< Character data
         integer :: length !< The allocated length
     contains
+        procedure :: appendString
+        procedure :: appendCharacterString
+        generic :: append => appendString, &
+                             appendCharacterString
         final :: delete_string 
     end type
 
@@ -26,6 +30,9 @@ implicit none
         procedure :: constructFromSize
         procedure :: constructFromString
         procedure :: constructFromCharacterString
+    end interface
+    interface assignment(=)
+        procedure :: copy
     end interface
 contains
     ! Construct a string given an initial size
@@ -66,21 +73,37 @@ contains
         end if
     end subroutine
 
-        if (allocated(self%value)) then 
-            deallocate(self%value)
-        end if
-    end subroutine
-
-    subroutine copy(self,other)
+    subroutine appendString(this,other)
         implicit none
-        class(string),intent(inout) :: self
+        class(string),intent(inout) :: this
+        class(string),intent(in) :: other
+        character(len=this%length) :: tmp
+
+        tmp = this%value(:)
+
+        this%length = this%length + other%length
+        if (allocated(this%value)) then 
+            deallocate(this%value)
+        end if
+        allocate(character(this%length)::this%value)
+    end subroutine
+    subroutine appendCharacterString(this,other)
+        implicit none
+        class(string),intent(inout) :: this
+        character(len=*),intent(in) :: other
+
+        call this%appendString(string(other))
+    end subroutine
+    subroutine copy(this,other)
+        implicit none
+        class(string),intent(inout) :: this
         class(string),intent(in) :: other
 
-        if (allocated(self%value)) then 
-            deallocate(self%value)
+        if (allocated(this%value)) then
+            deallocate(this%value)
         end if
-        self%length = other%length
-        allocate(character(self%length)::self%value)
-        self%value = other%value
+        this%length=other%length
+        allocate(character(this%length)::this%value)
+        this%value = other%value
     end subroutine
 end module

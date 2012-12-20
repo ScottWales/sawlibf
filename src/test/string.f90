@@ -24,6 +24,7 @@ contains
         type(string) :: foo, bar
         bar = string("abcd")
         foo = string(bar)
+        bar%value = "hijk"
         call assert(foo%length .eq. 4)
         call assert(foo%value(:) .eq. "abcd")
     end subroutine
@@ -37,6 +38,19 @@ contains
         bar%value = "hijk"
         call assert(foo%value(:) .eq. "abcd")
     end subroutine
+    subroutine append
+        type(string) :: foo,bar
+        foo = string("abc")
+        bar = string("def")
+
+        call foo%append(bar)
+        call assert(foo%value(:) .eq. "abcdef")
+        call assert(bar%value(:) .eq. "def")
+
+        call bar%append("ghi")
+        call assert(bar%value(:) .eq. "defghi")
+    end subroutine
+
 end module
 
 program test
@@ -46,5 +60,7 @@ program test
     call initInt()
     call initChar()
     call initString()
+    call copy()
+    call append()
 
 end program
