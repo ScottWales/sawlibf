@@ -43,8 +43,7 @@ check:$(TEST)
 	    if [ $$failed -gt 0 ]; then echo "$$failed tests failed"; exit 1; fi
 clean:
 	$(RM) -r build bin test doc lib
-doc:doxyfile $(ALL_SRC)
-	doxygen $<
+doc:$(ALL_SRC)
 
 build/%.o:src/%.f90
 	@$(MKDIR) $(dir $@)
