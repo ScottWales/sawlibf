@@ -11,6 +11,10 @@
 !   Copy constructor
 ! string%append(string s) -> string
 !   Append s to the end of this
+! a = b
+!   Sets the string a equal to string b
+! a .eq. b
+!   Returns true if string a is equal to string b
 
 module sawlibf_string
 implicit none
@@ -22,8 +26,10 @@ implicit none
         procedure :: appendCharacterString
         generic :: append => appendString, &
                              appendCharacterString
-        procedure :: equal
-        generic :: operator(.eq.) => equal
+        procedure :: equalString
+        procedure :: equalCharacterString
+        generic :: operator(.eq.) => equalString, &
+                                     equalCharacterString
         final :: delete_string 
     end type
 
@@ -113,12 +119,20 @@ contains
         this%value = other%value
     end subroutine
 
-    function equal(this,other)
+    function equalString(this,other) result(equal)
         implicit none
         class(string),intent(in) :: this
         class(string),intent(in) :: other
         logical :: equal
 
         equal = this%value .eq. other%value
+    end function
+    function equalCharacterString(this,other) result(equal)
+        implicit none
+        class(string),intent(in) :: this
+        character(len=*),intent(in) :: other
+        logical :: equal
+
+        equal = this%value .eq. other
     end function
 end module

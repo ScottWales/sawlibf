@@ -53,6 +53,7 @@ contains
         bar = string("def")
 
         call assert(.not. (foo .eq. bar))
+        call assert(foo .eq. "abc")
         foo = bar
         call assert(foo .eq. bar)
     end subroutine
