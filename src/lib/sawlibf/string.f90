@@ -22,6 +22,8 @@ implicit none
         procedure :: appendCharacterString
         generic :: append => appendString, &
                              appendCharacterString
+        procedure :: equal
+        generic :: operator(.eq.) => equal
         final :: delete_string 
     end type
 
@@ -89,6 +91,7 @@ contains
         this%value(1:len(tmp)) = tmp
         this%value(len(tmp)+1:this%length) = other%value
     end subroutine
+
     subroutine appendCharacterString(this,other)
         implicit none
         class(string),intent(inout) :: this
@@ -96,6 +99,7 @@ contains
 
         call this%appendString(string(other))
     end subroutine
+
     subroutine copy(this,other)
         implicit none
         class(string),intent(inout) :: this
@@ -108,4 +112,13 @@ contains
         allocate(character(this%length)::this%value)
         this%value = other%value
     end subroutine
+
+    function equal(this,other)
+        implicit none
+        class(string),intent(in) :: this
+        class(string),intent(in) :: other
+        logical :: equal
+
+        equal = this%value .eq. other%value
+    end function
 end module

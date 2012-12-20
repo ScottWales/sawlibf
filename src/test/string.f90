@@ -4,9 +4,6 @@ module test_string
     implicit none
 
 contains
-    subroutine declare
-        type(string) foo
-    end subroutine
     subroutine initInt
         type(string) foo
         foo = string(9)
@@ -50,17 +47,26 @@ contains
         call bar%append("ghi")
         call assert(bar%value(:) .eq. "defghi")
     end subroutine
+    subroutine equal
+        type(string) :: foo,bar
+        foo = string("abc")
+        bar = string("def")
+
+        call assert(.not. (foo .eq. bar))
+        foo = bar
+        call assert(foo .eq. bar)
+    end subroutine
 
 end module
 
 program test
     use test_string
 
-    call declare()
     call initInt()
     call initChar()
     call initString()
     call copy()
     call append()
+    call equal()
 
 end program
