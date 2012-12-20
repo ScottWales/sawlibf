@@ -11,9 +11,10 @@
 !   Copy constructor
 !
 ! a = b
-!   Sets the string a equal to string b
+!   Assigns the value of one string to another, or assigns between strings and
+!   character(len=*)
 ! a .eq. b
-!   Returns true if string a is equal to string b
+!   Returns true if string a is equal to string or character(len=*) b
 !
 ! call string%append(string s)
 !   Append s to the end of this
@@ -44,6 +45,7 @@ implicit none
     interface assignment(=)
         procedure :: copyString
         procedure :: copyCharacterString
+        procedure :: toCharacterString
     end interface
 contains
     ! Construct a string given an initial size
@@ -128,8 +130,15 @@ contains
 
         call copyString(this,string(other))
     end subroutine
+    subroutine toCharacterString(this,other)
+        implicit none
+        character(len=*),intent(out) :: this
+        type(string),intent(in) :: other
 
-    function equalString(this,other) result(equal)
+        this = other%value
+    end subroutine
+
+    elemental function equalString(this,other) result(equal)
         implicit none
         class(string),intent(in) :: this
         class(string),intent(in) :: other
@@ -137,7 +146,7 @@ contains
 
         equal = this%value .eq. other%value
     end function
-    function equalCharacterString(this,other) result(equal)
+    elemental function equalCharacterString(this,other) result(equal)
         implicit none
         class(string),intent(in) :: this
         character(len=*),intent(in) :: other

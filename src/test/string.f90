@@ -49,7 +49,15 @@ contains
         foo = bar
         call assert(foo .eq. bar)
     end subroutine
+    subroutine tochar
+        type(string) :: foo
+        character(len=3) :: bar
 
+        foo = "abc"
+        bar = foo
+
+        call assert(bar .eq. "abc")
+    end subroutine
 end module
 
 program test
@@ -60,5 +68,6 @@ program test
     call copy()
     call append()
     call equal()
+    call tochar()
 
 end program
