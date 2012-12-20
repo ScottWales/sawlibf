@@ -1,5 +1,5 @@
 module test_string
-    use sawlibf_string
+    use sawlibf_string, only: string
     use sawlibf_test
     implicit none
 
@@ -27,7 +27,16 @@ contains
         call assert(foo%length .eq. 4)
         call assert(foo%value(:) .eq. "abcd")
     end subroutine
+    subroutine copy
+        type(string) :: foo,bar
+        bar = string("abcd")
+        foo = string("efg")
 
+        foo = bar
+        call assert(foo%value(:) .eq. "abcd")
+        bar%value = "hijk"
+        call assert(foo%value(:) .eq. "abcd")
+    end subroutine
 end module
 
 program test
