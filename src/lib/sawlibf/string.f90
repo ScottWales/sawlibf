@@ -13,11 +13,11 @@
 ! a = b
 !   Assigns the value of one string to another, or assigns between strings and
 !   character(len=*)
-! a .eq. b
-!   Returns true if string a is equal to string or character(len=*) b
+! a .eq. b -> logical
+!   Returns true if string/character(len=*) a and b are equal
+! a .append. b -> string
+!   Returns a string with b appended to a
 !
-! call string%append(string s)
-!   Append s to the end of the string
 ! string%length -> integer
 !   Returns the length of the string
 ! 
@@ -40,16 +40,6 @@ implicit none
         character(len=:),allocatable,private :: value
         integer,private :: valuelength
     contains
-        procedure :: appendString
-        procedure :: appendCharacterString
-        generic :: append => appendString, &
-                             appendCharacterString
-
-        procedure :: equalString
-        procedure :: equalCharacterString
-        generic :: operator(.eq.) => equalString, &
-                                     equalCharacterString
-
         procedure :: length
 
         final :: delete_string 
@@ -60,18 +50,29 @@ implicit none
         procedure :: constructFromString
         procedure :: constructFromCharacterString
     end interface
+
+    ! Operators
     interface assignment(=)
         procedure :: copyString
         procedure :: copyCharacterString
         procedure :: toCharacterString
     end interface
     interface operator(.eq.)
+        procedure :: equalString
+        procedure :: equalCharacterString
         procedure :: characterStringEqual
+    end interface
+    interface operator(.append.)
+        procedure :: appendString
+        procedure :: appendCharacterString
+        procedure :: characterStringAppend
     end interface
 
     public :: string
     public :: assignment(=)
     public :: operator(.eq.)
+    public :: operator(.append.)
+    public :: appendCharacterString
 contains
     ! Construct a string given an initial size
     function constructFromSize(value) result(this)
@@ -111,30 +112,38 @@ contains
         end if
     end subroutine
 
-    subroutine appendString(this,other)
+    function appendString(lhs,rhs) result(this)
         implicit none
-        class(string),intent(inout) :: this
-        class(string),intent(in) :: other
-        character(len=this%valuelength) :: tmp
+        class(string),intent(in) :: lhs, rhs
+        character(len=lhs%valuelength) :: tmp
+        type(string) :: this
 
-        tmp = this%value(:)
-
-        this%valuelength = this%valuelength + other%valuelength
+        tmp = lhs%value(:)
+        this = lhs
+        this%valuelength = this%valuelength + rhs%valuelength
         if (allocated(this%value)) then 
             deallocate(this%value)
         end if
         allocate(character(this%valuelength)::this%value)
         this%value(1:len(tmp)) = tmp
-        this%value(len(tmp)+1:this%valuelength) = other%value
-    end subroutine
-
-    subroutine appendCharacterString(this,other)
+        this%value(len(tmp)+1:this%valuelength) = rhs%value
+    end function
+    function appendCharacterString(lhs,rhs) result(this)
         implicit none
-        class(string),intent(inout) :: this
-        character(len=*),intent(in) :: other
+        class(string),intent(in) :: lhs
+        character(len=*),intent(in) :: rhs
+        type(string) :: this
 
-        call this%appendString(string(other))
-    end subroutine
+        this = lhs .append. string(rhs)
+    end function
+    function characterStringAppend(lhs,rhs) result(this)
+        implicit none
+        character(len=*),intent(in) :: lhs
+        class(string),intent(in) :: rhs
+        type(string) :: this
+
+        this = string(lhs) .append. rhs
+    end function
 
     subroutine copyString(this,other)
         implicit none

@@ -32,11 +32,11 @@ contains
         foo = string("abc")
         bar = string("def")
 
-        call foo%append(bar)
+        foo =foo .append. bar
         call assert(foo .eq. "abcdef")
         call assert(bar .eq. "def")
 
-        call bar%append("ghi")
+        bar = bar .append. "ghi"
         call assert(bar .eq. "defghi")
     end subroutine
     subroutine equal
