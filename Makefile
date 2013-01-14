@@ -22,13 +22,14 @@ MKDIR=mkdir -p
 FFLAGS+=-warn all -warn errors -check all
 FFLAGS+=-module include
 FFLAGS+=-g -traceback
+FFLAGS+=-fpp -Iinclude
 
 CFLAGS+=-Wall -Werror
 CFLAGS+=-MMD -MP
 
-ALL_SRC:=$(shell find src -type f 2> /dev/null)
-BIN_SRC:=$(shell find src/bin -type f 2> /dev/null)
-TEST_SRC:=$(shell find src/test -type f 2> /dev/null)
+ALL_SRC:=$(shell find src -type f -not -iname '.*' 2> /dev/null)
+BIN_SRC:=$(shell find src/bin -type f -not -iname '.*' 2> /dev/null)
+TEST_SRC:=$(shell find src/test -type f -not -iname '.*' 2> /dev/null)
 
 BIN:=$(patsubst src/bin/%,bin/%,$(basename $(BIN_SRC)))
 TEST:=$(patsubst src/test/%,test/%,$(basename $(TEST_SRC)))
