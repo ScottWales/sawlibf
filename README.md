@@ -1,7 +1,11 @@
-# Basic Fortran project
+# A Fortran library
 
-This is a basic makefile to set up fortran projects, which includes automatic
-module dependancy generation.
+This is a basic Fortran libary with a few types
+
+## Types
+
+* String
+* Linked List Template
 
 ## Usage
 
