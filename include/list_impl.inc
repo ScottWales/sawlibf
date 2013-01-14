@@ -11,10 +11,6 @@
 !        use modvalue, value_type => value
 !        include 'list_impl.inc'
 !    end module
-    
-    interface addp
-        procedure :: addList
-    end interface 
 
     type list
         type(list), pointer :: next
