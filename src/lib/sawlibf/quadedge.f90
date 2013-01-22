@@ -42,6 +42,7 @@ module sawlibf_quadedge
 
         ! Indices for data access
         integer, dimension(:), allocatable :: dataindex
+        integer :: maxindex
     contains
         procedure :: makeEdge
         procedure :: splice
@@ -79,10 +80,10 @@ contains
         type(quadedge) :: this
 
         this%onext_size = 0
-        this%onext_available = 8
+        this%onext_available = 16
         allocate(this%onext(0:this%onext_available-1))
-        allocate(this%facedata(0:this%onext_available-1))
-        allocate(this%edgedata(0:this%onext_available-1))
+        allocate(this%dataindex(0:this%onext_available-1))
+        this%maxindex = 0
     end function
     subroutine reallocData(this)
         type(quadedge), intent(inout) :: this
@@ -94,6 +95,10 @@ contains
         allocate(temp(0:this%onext_available-1))
         temp(0:size(this%onext)-1) = this%onext
         call move_alloc(temp,this%onext)
+
+        allocate(temp(0:this%onext_available-1))
+        temp(0:size(this%dataindex)-1) = this%dataindex
+        call move_alloc(temp,this%dataindex)
     end subroutine
 
     ! Create a new edge E with no connections
@@ -109,6 +114,14 @@ contains
         this%onext(sym(e))  =  sym(e)
         this%onext(irot(e)) = irot(sym(e))
         this%onext(rot(e))  =  rot(sym(e))
+
+        ! Set the vertex and point indices to unique values
+        this%dataindex(e)      = this%maxindex + 1
+        this%dataindex(sym(e)) = this%maxindex + 2
+        this%dataindex(rot(e)) = this%maxindex + 3
+        this%dataindex(irot(e)) = this%dataindex(rot(e))
+
+        this%maxindex = this%maxindex + 3
     end function
 
     ! Create or destroy a link between the origin of A and the origin of B
@@ -141,9 +154,9 @@ contains
         e = this%makeEdge()
 
         ! Set Org(e) to Dest(a)
-        this%facedata(e) = this%facedata(sym(a))
+        this%dataindex(e) = this%dest(a)
         ! Set Dest(e) to Org(b)
-        this%facedata(sym(e)) = this%facedata(b)
+        this%dataindex(sym(e)) = this%org(b)
 
         if (s%isLeft .eq. .true.) then
             call this%splice(e,this%lnext(a))
@@ -176,7 +189,7 @@ contains
         integer :: ie, ir
         ie = e/4
         ir = mod(e,4)
-        sym = ie + mod(ir + 2,4)
+        sym = ie*4 + mod(ir + 2,4)
     end function
     elemental function rot(e)
         integer, intent(in) :: e
@@ -184,7 +197,7 @@ contains
         integer :: ie, ir
         ie = e/4
         ir = mod(e,4)
-        rot = ie + mod(ir + 1,4)
+        rot = ie*4 + mod(ir + 1,4)
     end function
     elemental function irot(e)
         integer, intent(in) :: e
@@ -192,7 +205,7 @@ contains
         integer :: ie, ir
         ie = e/4
         ir = mod(e,4)
-        irot = ie + mod(ir + 3,4)
+        irot = ie*4 + mod(ir + 3,4)
     end function
 
     ! The following functions are used to access adjacent edges. 
@@ -283,6 +296,6 @@ contains
     elemental function edgeindex(e)
         integer, intent(in) :: e
         integer :: edgeindex
-        return e/4
+        edgeindex = e/4
     end function
 end module
